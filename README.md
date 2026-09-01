@@ -62,6 +62,20 @@ git clone https://github.com/Giuliano-sn/omarchy-command-pulse \
 omarchy plugin enable io.github.giuliano-sn.command-pulse --section right
 ```
 
+No external dependencies beyond `bash`, already present on any Omarchy install.
+
+## Uninstall
+
+```sh
+omarchy plugin remove io.github.giuliano-sn.command-pulse
+```
+
+This disables the widget and deletes
+`~/.config/omarchy/plugins/io.github.giuliano-sn.command-pulse/`. No other
+files are touched; its now-inert entry stays in
+`~/.config/omarchy/shell.json` and can be deleted by hand if you want it
+gone entirely.
+
 ## Configuration
 
 **Right-click the widget** to open its settings form directly on the bar —
