@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.giuliano-sn.command-pulse",
+  "name": "Command Pulse",
+  "version": "1.0.0",
+  "author": "Giuliano-sn",
+  "license": "MIT",
+  "homepage": "https://github.com/Giuliano-sn/omarchy-command-pulse",
+  "description": "Runs a shell command on a schedule and shows its live output in the bar, ANSI colors and all.",
+  "keepLoaded": false,
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Command Pulse",
+    "description": "Runs a shell command on an interval and shows its output in the bar, preserving ANSI colors. Left-click to run it again immediately.",
+    "category": "System",
+    "allowMultiple": true,
+    "defaultSection": "right",
+    "defaults": {
+      "command": "uptime -p",
+      "intervalValue": 30,
+      "intervalUnit": "seconds",
+      "maxLength": 60,
+      "showIcon": true,
+      "hideWhenEmpty": false
+    },
+    "schema": [
+      {
+        "key": "command",
+        "type": "string",
+        "label": "Command",
+        "description": "Shell command to run (via bash -lc). Its stdout is shown in the bar with ANSI colors preserved; stderr is shown if stdout is empty.",
+        "defaultValue": "uptime -p"
+      },
+      {
+        "key": "intervalValue",
+        "type": "integer",
+        "label": "Refresh every",
+        "min": 1,
+        "max": 999,
+        "step": 1,
+        "defaultValue": 30
+      },
+      {
+        "key": "intervalUnit",
+        "type": "enum",
+        "label": "Interval unit",
+        "options": [
+          "seconds",
+          "minutes",
+          "hours"
+        ],
+        "defaultValue": "seconds"
+      },
+      {
+        "key": "maxLength",
+        "type": "integer",
+        "label": "Max characters in bar",
+        "min": 0,
+        "max": 200,
+        "step": 1,
+        "defaultValue": 60,
+        "description": "Truncates the bar label past this many visible characters. 0 disables truncation."
+      },
+      {
+        "key": "showIcon",
+        "type": "boolean",
+        "label": "Show icon",
+        "defaultValue": true
+      },
+      {
+        "key": "hideWhenEmpty",
+        "type": "boolean",
+        "label": "Hide widget when output is empty",
+        "defaultValue": false
+      }
+    ]
+  }
+}
