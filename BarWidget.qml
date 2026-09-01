@@ -318,8 +318,8 @@ BarWidget {
     bar: root.bar
     open: root.panelMode === "settings"
     focusTarget: settingsLoader.item
-    contentWidth: settingsPanel.fittedContentWidth(Style.space(340))
-    contentHeight: settingsPanel.fittedContentHeight(settingsLoader.item ? settingsLoader.item.implicitHeight : 0, Style.space(600))
+    contentWidth: settingsPanel.fittedContentWidth(Style.space(374))
+    contentHeight: settingsPanel.fittedContentHeight(settingsLoader.item ? settingsLoader.item.implicitHeight : 0, Style.space(660))
 
     Loader {
       id: settingsLoader
@@ -398,6 +398,7 @@ BarWidget {
               from: 1
               to: 999
               stepSize: 1
+              fieldWidth: Style.spacing.numberFieldWidth * 0.5
               foreground: root.barForeground
               onModified: function (value) { root.draftIntervalValue = value }
             }
@@ -406,6 +407,7 @@ BarWidget {
               label: "Unit"
               value: root.draftIntervalUnit
               options: ["seconds", "minutes", "hours"]
+              implicitWidth: Style.spacing.dropdownWidth * 0.5
               foreground: root.barForeground
               onChanged: function (value) { root.draftIntervalUnit = value }
             }
@@ -419,6 +421,7 @@ BarWidget {
             from: 0
             to: 200
             stepSize: 5
+            fieldWidth: Style.spacing.numberFieldWidth * 0.5
             foreground: root.barForeground
             onModified: function (value) { root.draftMaxLength = value }
           }
@@ -450,6 +453,7 @@ BarWidget {
               from: 240
               to: 1200
               stepSize: 20
+              fieldWidth: Style.spacing.numberFieldWidth * 0.5
               foreground: root.barForeground
               onModified: function (value) { root.draftMaxPopupWidth = value }
             }
@@ -460,6 +464,7 @@ BarWidget {
               from: 120
               to: 900
               stepSize: 20
+              fieldWidth: Style.spacing.numberFieldWidth * 0.5
               foreground: root.barForeground
               onModified: function (value) { root.draftMaxPopupHeight = value }
             }

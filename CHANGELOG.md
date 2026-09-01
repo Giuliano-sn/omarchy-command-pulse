@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.1
+
+- Settings form: interval spinbox and the "seconds/minutes/hours" dropdown
+  were sized for a wider dialog than the panel actually is — shrunk both to
+  half width. The popup max width/height fields were getting clipped off
+  the bottom of the form; grew the settings panel ~10% (width and height
+  cap) so every field, including those two, is visible without scrolling.
+
 ## 1.1.0
 
 - Bar face now shows the **last non-blank line** of output instead of the
