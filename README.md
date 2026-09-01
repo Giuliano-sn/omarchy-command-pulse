@@ -31,11 +31,15 @@ same in the bar as it does in your terminal.
 Six different commands, six different looks — it's all just ANSI escape
 codes in each command's own output:
 
-| | |
-|---|---|
-| ![All systems operational](screenshots/demo-status.png)<br>`printf '✅ \033[1;32mAll systems operational\033[0m'` | ![Deployed v2.4.1](screenshots/demo-deploy.png)<br>`printf '🚀 \033[1;36mDeployed v2.4.1\033[0m'` |
-| ![2 containers down](screenshots/demo-alert.png)<br>`printf '🚨 \033[1;31m2 containers down\033[0m'` | ![Disk 87% full](screenshots/demo-disk.png)<br>`printf '\033[1;33mDisk 87%% full\033[0m'` |
-| ![42 passed, 2 failed](screenshots/demo-tests.png)<br>`printf '\033[32m42 passed\033[0m \033[31m2 failed\033[0m'` | ![feature/login branch, 3 commits ahead](screenshots/demo-branch.png)<br>`printf '\033[35mfeature/login\033[0m \033[2m(3 commits ahead)\033[0m'` |
+![All systems operational](screenshots/demo-status.png)<br>`ping -c 1 -W 1 8.8.8.8 >/dev/null 2>&1 && printf '\033[32m✅ All systems operational\033[0m\n' \|| printf '\033[31mNetwork failed\033[0m\n'` 
+
+![2 containers down](screenshots/demo-alert.png)<br>`printf '\033[33m%s containers down\033[0m\n' "$(docker ps -a --filter 'status=exited' --filter 'status=dead' -q \| wc -l)"`
+
+![Disk 87% full](screenshots/demo-disk.png)<br>`printf '\033[33mDisk %s full\033[0m\n' "$(df / --output=pcent \| tail -1 \| tr -d ' ')"`
+
+![42 passed, 2 failed](screenshots/demo-tests.png)<br>`printf '\033[32m42 passed\033[0m \033[31m2 failed\033[0m'`
+
+![feature/login branch, 3 commits ahead](screenshots/demo-branch.png)<br>`printf '\033[35mfeature/login\033[0m \033[2m(3 commits ahead)\033[0m'`
 
 ### Settings (right-click)
 
@@ -82,16 +86,16 @@ You can also edit its entry under `bar.layout.<section>` in
 }
 ```
 
-| Key | Type | Default | Description |
-|---|---|---|---|
-| `command` | string | `uptime -p` | Shell command to run via `bash -lc`. |
-| `intervalValue` | integer | `30` | How often to run it. |
-| `intervalUnit` | enum (`seconds`, `minutes`, `hours`) | `seconds` | Unit for `intervalValue`. |
-| `maxLength` | integer | `60` | Truncate the bar label past this many visible characters (`0` = no limit). |
-| `showIcon` | boolean | `true` | Show a terminal glyph before the output. |
-| `hideWhenEmpty` | boolean | `false` | Hide the widget entirely when the command's output is empty. |
-| `maxPopupWidth` | integer | `480` | Max width (px) of the left-click full-output popup. |
-| `maxPopupHeight` | integer | `320` | Max height (px) of the left-click full-output popup; taller output scrolls. |
+| Key              | Type                                 | Default     | Description                                                                 |
+| ---------------- | ------------------------------------ | ----------- | --------------------------------------------------------------------------- |
+| `command`        | string                               | `uptime -p` | Shell command to run via `bash -lc`.                                        |
+| `intervalValue`  | integer                              | `30`        | How often to run it.                                                        |
+| `intervalUnit`   | enum (`seconds`, `minutes`, `hours`) | `seconds`   | Unit for `intervalValue`.                                                   |
+| `maxLength`      | integer                              | `60`        | Truncate the bar label past this many visible characters (`0` = no limit).  |
+| `showIcon`       | boolean                              | `true`      | Show a terminal glyph before the output.                                    |
+| `hideWhenEmpty`  | boolean                              | `false`     | Hide the widget entirely when the command's output is empty.                |
+| `maxPopupWidth`  | integer                              | `480`       | Max width (px) of the left-click full-output popup.                         |
+| `maxPopupHeight` | integer                              | `320`       | Max height (px) of the left-click full-output popup; taller output scrolls. |
 
 The bar face shows the **last non-blank line** of the command's output,
 capped at `maxLength` characters. Left-click for the full, multi-line,
