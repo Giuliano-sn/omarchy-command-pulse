@@ -24,6 +24,16 @@ same in the bar as it does in your terminal.
 - **Middle-click** reruns the command immediately.
 - Hover for a quick tooltip with the command and current status.
 
+## Screenshots
+
+Three different commands on the bar face — colors and emoji included — and
+the right-click settings form:
+
+| | |
+|---|---|
+| ![All systems operational](screenshots/demo-status.png) | ![Deployed v2.4.1](screenshots/demo-deploy.png) |
+| ![2 containers down](screenshots/demo-alert.png) | ![Settings form](screenshots/settings.png) |
+
 ## Install
 
 ```sh
