@@ -26,13 +26,23 @@ same in the bar as it does in your terminal.
 
 ## Screenshots
 
-Three different commands on the bar face — colors and emoji included — and
-the right-click settings form:
+### Bar face
+
+Six different commands, six different looks — it's all just ANSI escape
+codes in each command's own output:
 
 | | |
 |---|---|
-| ![All systems operational](screenshots/demo-status.png) | ![Deployed v2.4.1](screenshots/demo-deploy.png) |
-| ![2 containers down](screenshots/demo-alert.png) | ![Settings form](screenshots/settings.png) |
+| ![All systems operational](screenshots/demo-status.png)<br>`printf '✅ \033[1;32mAll systems operational\033[0m'` | ![Deployed v2.4.1](screenshots/demo-deploy.png)<br>`printf '🚀 \033[1;36mDeployed v2.4.1\033[0m'` |
+| ![2 containers down](screenshots/demo-alert.png)<br>`printf '🚨 \033[1;31m2 containers down\033[0m'` | ![Disk 87% full](screenshots/demo-disk.png)<br>`printf '\033[1;33mDisk 87%% full\033[0m'` |
+| ![42 passed, 2 failed](screenshots/demo-tests.png)<br>`printf '\033[32m42 passed\033[0m \033[31m2 failed\033[0m'` | ![feature/login branch, 3 commits ahead](screenshots/demo-branch.png)<br>`printf '\033[35mfeature/login\033[0m \033[2m(3 commits ahead)\033[0m'` |
+
+### Settings (right-click)
+
+![Settings form](screenshots/settings.png)
+
+Right-click the widget any time to change the command, interval, or sizing
+— no need to touch `shell.json` by hand.
 
 ## Install
 
