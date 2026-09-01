@@ -10,12 +10,19 @@ same in the bar as it does in your terminal.
 
 - Runs **any shell command** (`bash -lc "<command>"`), on your schedule.
 - Interval configurable in **seconds, minutes, or hours**.
+- Shows the **last non-blank line** of the output on the bar face — the
+  line that actually matters for a multi-line command (a script that logs
+  its progress and then prints a final status, say).
 - Renders **ANSI SGR colors and styles** (16-color, 256-color, and truecolor
   foreground, plus bold, dim, italic, underline, strikethrough, inverse) as
   real color in the bar — not just plain text.
-- Hover for a tooltip with the full command, last status, and full output.
-- Left-click to re-run the command immediately.
-- Multiple instances allowed — add one Command Pulse widget per command.
+- **Left-click** opens the full output (every line, still ANSI-colored) in a
+  popup capped at a configurable max width/height, with scrolling for
+  anything bigger.
+- **Right-click** opens a settings form right on the bar — command,
+  interval, bar/popup sizing, all editable without touching `shell.json`.
+- **Middle-click** reruns the command immediately.
+- Hover for a quick tooltip with the command and current status.
 
 ## Install
 
@@ -33,18 +40,25 @@ omarchy plugin enable io.github.giuliano-sn.command-pulse --section right
 
 ## Configuration
 
-Configure the widget from the Omarchy bar widget settings, or by editing its
-entry under `bar.layout.<section>` in `~/.config/omarchy/shell.json`:
+**Right-click the widget** to open its settings form directly on the bar —
+command, refresh interval (with a seconds/minutes/hours unit), max bar-label
+length, icon/hide toggles, and the full-output popup's max width/height.
+Hit Save and it writes straight back to `~/.config/omarchy/shell.json`.
+
+You can also edit its entry under `bar.layout.<section>` in
+`~/.config/omarchy/shell.json` directly:
 
 ```json
 {
   "id": "io.github.giuliano-sn.command-pulse",
-  "command": "git status --short | head -1",
+  "command": "git status --short | tail -1",
   "intervalValue": 30,
   "intervalUnit": "seconds",
   "maxLength": 60,
   "showIcon": true,
-  "hideWhenEmpty": false
+  "hideWhenEmpty": false,
+  "maxPopupWidth": 480,
+  "maxPopupHeight": 320
 }
 ```
 
@@ -53,13 +67,17 @@ entry under `bar.layout.<section>` in `~/.config/omarchy/shell.json`:
 | `command` | string | `uptime -p` | Shell command to run via `bash -lc`. |
 | `intervalValue` | integer | `30` | How often to run it. |
 | `intervalUnit` | enum (`seconds`, `minutes`, `hours`) | `seconds` | Unit for `intervalValue`. |
-| `maxLength` | integer | `60` | Truncate the bar label past this many visible characters (`0` = no limit). The tooltip always shows the full output. |
+| `maxLength` | integer | `60` | Truncate the bar label past this many visible characters (`0` = no limit). |
 | `showIcon` | boolean | `true` | Show a terminal glyph before the output. |
 | `hideWhenEmpty` | boolean | `false` | Hide the widget entirely when the command's output is empty. |
+| `maxPopupWidth` | integer | `480` | Max width (px) of the left-click full-output popup. |
+| `maxPopupHeight` | integer | `320` | Max height (px) of the left-click full-output popup; taller output scrolls. |
 
-Only the first line of output is shown on the bar face (bar space is
-limited); the tooltip shows the full, multi-line, ANSI-colored output,
-capped defensively at 40 lines / 4000 characters for very chatty commands.
+The bar face shows the **last non-blank line** of the command's output,
+capped at `maxLength` characters. Left-click for the full, multi-line,
+ANSI-colored output (defensively capped at 500 lines / 20000 characters for
+a runaway command), sized up to `maxPopupWidth` × `maxPopupHeight` with
+scrolling beyond that.
 
 If the command's stdout is empty but it printed something to stderr, that is
 shown instead (and the bar face turns the bar's "urgent" color when the

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "io.github.giuliano-sn.command-pulse",
   "name": "Command Pulse",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Giuliano-sn",
   "license": "MIT",
   "homepage": "https://github.com/Giuliano-sn/omarchy-command-pulse",
@@ -16,9 +16,9 @@
   },
   "barWidget": {
     "displayName": "Command Pulse",
-    "description": "Runs a shell command on an interval and shows its output in the bar, preserving ANSI colors. Left-click to run it again immediately.",
+    "description": "Runs a shell command on an interval and shows the last line of its output in the bar, preserving ANSI colors. Left-click for the full output, right-click for settings, middle-click to run it again immediately.",
     "category": "System",
-    "allowMultiple": true,
+    "allowMultiple": false,
     "defaultSection": "right",
     "defaults": {
       "command": "uptime -p",
@@ -26,7 +26,9 @@
       "intervalUnit": "seconds",
       "maxLength": 60,
       "showIcon": true,
-      "hideWhenEmpty": false
+      "hideWhenEmpty": false,
+      "maxPopupWidth": 480,
+      "maxPopupHeight": 320
     },
     "schema": [
       {
@@ -77,6 +79,24 @@
         "type": "boolean",
         "label": "Hide widget when output is empty",
         "defaultValue": false
+      },
+      {
+        "key": "maxPopupWidth",
+        "type": "integer",
+        "label": "Full output window max width (px)",
+        "min": 240,
+        "max": 1200,
+        "step": 20,
+        "defaultValue": 480
+      },
+      {
+        "key": "maxPopupHeight",
+        "type": "integer",
+        "label": "Full output window max height (px)",
+        "min": 120,
+        "max": 900,
+        "step": 20,
+        "defaultValue": 320
       }
     ]
   }

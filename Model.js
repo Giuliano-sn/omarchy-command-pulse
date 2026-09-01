@@ -15,8 +15,10 @@ var PALETTE16 = [
   "#729fcf", "#ad7fa8", "#34e2e2", "#eeeeec"
 ]
 
-var TOOLTIP_MAX_CHARS = 4000
-var TOOLTIP_MAX_LINES = 40
+// Safety caps for the full-output popup — generous, but a runaway command
+// (a busy log tail, say) still can't be allowed to freeze the panel.
+var VIEW_MAX_CHARS = 20000
+var VIEW_MAX_LINES = 500
 
 function clamp(n, lo, hi) {
   return Math.max(lo, Math.min(hi, n))
@@ -239,48 +241,56 @@ function truncateSegments(segments, maxChars) {
   return result
 }
 
-function firstLine(raw) {
-  var text = String(raw || "")
-  var idx = text.indexOf("\n")
-  var line = idx === -1 ? text : text.slice(0, idx)
-  return line.replace(/^[ \t]+|[ \t]+$/g, "")
+// Last line of the output that has visible (non-ANSI, non-whitespace)
+// content — trailing blank lines a command prints (a final newline, a
+// spacer) are skipped so the bar face always shows something meaningful.
+function lastNonEmptyLine(raw) {
+  var lines = String(raw || "").split("\n")
+  for (var i = lines.length - 1; i >= 0; i--) {
+    var candidate = lines[i].replace(/\r$/, "")
+    var plain = stripAnsi(candidate).replace(/^[ \t]+|[ \t]+$/g, "")
+    if (plain.length > 0) return candidate.replace(/^[ \t]+|[ \t]+$/g, "")
+  }
+  return ""
 }
 
 // Builds the compact single-line rich text shown on the bar face itself:
-// first line of output only, ANSI colors preserved, capped at `maxChars`
-// visible characters (0 = unlimited).
+// the last non-blank line of output, ANSI colors preserved, capped at
+// `maxChars` visible characters (0 = unlimited).
 function barMarkup(raw, maxChars) {
-  var line = firstLine(raw)
+  var line = lastNonEmptyLine(raw)
   var segments = parseAnsi(line)
   var truncated = truncateSegments(segments, maxChars)
   return {
     html: segmentsToHtml(truncated),
-    plain: segmentsPlainLength(truncated) === 0 ? "" : "x",
     isEmpty: segmentsPlainLength(segments) === 0
   }
 }
 
-// Builds the full multi-line rich text shown in the hover tooltip: command,
-// status line, and the output (stdout, or stderr when stdout was empty),
-// each capped defensively so a runaway command can't blow up the popup.
-function tooltipMarkup(command, statusLine, output) {
-  var text = String(output || "")
-  var lines = text.split("\n")
-  var lineTruncated = lines.length > TOOLTIP_MAX_LINES
-  if (lineTruncated) lines = lines.slice(0, TOOLTIP_MAX_LINES)
+// Builds the full multi-line rich text shown in the "view output" popup,
+// ANSI colors preserved, defensively capped so a runaway command can't
+// freeze the panel.
+function outputMarkup(raw) {
+  var lines = String(raw || "").split("\n")
+  var lineTruncated = lines.length > VIEW_MAX_LINES
+  if (lineTruncated) lines = lines.slice(0, VIEW_MAX_LINES)
   var joined = lines.join("\n")
 
   var segments = parseAnsi(joined)
-  var charTruncated = segmentsPlainLength(segments) > TOOLTIP_MAX_CHARS
-  var shown = truncateSegments(segments, TOOLTIP_MAX_CHARS)
-  var html = segmentsToHtml(shown)
+  var charTruncated = segmentsPlainLength(segments) > VIEW_MAX_CHARS
+  var shown = truncateSegments(segments, VIEW_MAX_CHARS)
+  return {
+    html: segmentsToHtml(shown),
+    isEmpty: segmentsPlainLength(segments) === 0,
+    truncated: lineTruncated || charTruncated
+  }
+}
 
-  var header = escapeHtml("$ " + command)
-  var status = escapeHtml(statusLine)
-  var footer = (lineTruncated || charTruncated) ? "<br/><i>… output truncated</i>" : ""
-
-  var body = html.length > 0 ? "<br/><br/>" + html : ""
-  return "<b>" + header + "</b><br/>" + status + body + footer
+// Short plain-text hint for the hover tooltip: command + current status.
+// Full output lives in the click-driven popup, not the tooltip.
+function statusTooltip(command, statusLine) {
+  return "<b>" + escapeHtml("$ " + command) + "</b><br/>" + escapeHtml(statusLine) +
+    "<br/><i>Left-click: full output · Right-click: settings · Middle-click: run now</i>"
 }
 
 function stripAnsi(raw) {
