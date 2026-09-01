@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.2
+
+- Settings form: all four spinboxes (refresh interval, max bar characters,
+  popup max width/height) sized up 50% from 1.1.1 — the half-width shrink
+  read as too cramped.
+
 ## 1.1.1
 
 - Settings form: interval spinbox and the "seconds/minutes/hours" dropdown

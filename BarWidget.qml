@@ -398,7 +398,7 @@ BarWidget {
               from: 1
               to: 999
               stepSize: 1
-              fieldWidth: Style.spacing.numberFieldWidth * 0.5
+              fieldWidth: Style.spacing.numberFieldWidth * 0.75
               foreground: root.barForeground
               onModified: function (value) { root.draftIntervalValue = value }
             }
@@ -421,7 +421,7 @@ BarWidget {
             from: 0
             to: 200
             stepSize: 5
-            fieldWidth: Style.spacing.numberFieldWidth * 0.5
+            fieldWidth: Style.spacing.numberFieldWidth * 0.75
             foreground: root.barForeground
             onModified: function (value) { root.draftMaxLength = value }
           }
@@ -453,7 +453,7 @@ BarWidget {
               from: 240
               to: 1200
               stepSize: 20
-              fieldWidth: Style.spacing.numberFieldWidth * 0.5
+              fieldWidth: Style.spacing.numberFieldWidth * 0.75
               foreground: root.barForeground
               onModified: function (value) { root.draftMaxPopupWidth = value }
             }
@@ -464,7 +464,7 @@ BarWidget {
               from: 120
               to: 900
               stepSize: 20
-              fieldWidth: Style.spacing.numberFieldWidth * 0.5
+              fieldWidth: Style.spacing.numberFieldWidth * 0.75
               foreground: root.barForeground
               onModified: function (value) { root.draftMaxPopupHeight = value }
             }
