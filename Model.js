@@ -177,7 +177,17 @@ function parseAnsi(raw) {
       continue
     }
 
-    if (ch === ESC) { i++; continue }
+    // Any other escape sequence (e.g. ESC ( B charset designation, often
+    // paired with sgr0/reset). Per ECMA-48 these are ESC + zero or more
+    // intermediate bytes (0x20-0x2F) + one final byte (0x30-0x7E); consume
+    // the whole thing so it doesn't leak into the visible text.
+    if (ch === ESC) {
+      var k = i + 1
+      while (k < text.length && text.charCodeAt(k) >= 0x20 && text.charCodeAt(k) <= 0x2f) k++
+      if (k < text.length) k++
+      i = k
+      continue
+    }
     if (ch === "\r") { i++; continue }
 
     buf += ch

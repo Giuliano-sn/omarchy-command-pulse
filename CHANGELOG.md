@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.1
+
+- **ANSI parsing fix**: escape sequences other than SGR/CSI/OSC (e.g. the
+  `ESC ( B` charset-designation sequence many tools emit right alongside a
+  color reset) were only having their leading `ESC` byte dropped, leaking
+  the rest (`(B`) into the visible output. The parser now consumes the
+  whole escape sequence per ECMA-48 (`ESC` + intermediate bytes 0x20-0x2F +
+  one final byte 0x30-0x7E), so it's discarded cleanly like SGR codes are.
+
 ## 1.2.0
 
 - **Resource safety fix**: the configured command now runs under a 15s
