@@ -20,6 +20,21 @@ var PALETTE16 = [
 var VIEW_MAX_CHARS = 20000
 var VIEW_MAX_LINES = 500
 
+// Safety caps for the command process itself. StdioCollector buffers a
+// stream's bytes in full until the process exits, so without these a noisy
+// producer (a busy log tail) or a hung one (a stuck network call) can grow
+// without bound or block the long-lived shell process indefinitely. The
+// byte cap is enforced at the source, before Quickshell ever sees the
+// bytes; the deadline guarantees the process — and the run it belongs to —
+// eventually ends no matter what the command does.
+var RUN_TIMEOUT_SEC = 15
+var RUN_KILL_AFTER_SEC = 2
+var RUN_OUTPUT_BYTE_CAP = 262144
+// GNU coreutils `timeout` exit codes: 124 = deadline hit, ran to term;
+// 128+9 = still alive after the kill-after grace period, sent SIGKILL.
+var TIMEOUT_EXIT_CODE = 124
+var TIMEOUT_KILLED_EXIT_CODE = 137
+
 function clamp(n, lo, hi) {
   return Math.max(lo, Math.min(hi, n))
 }
@@ -295,4 +310,32 @@ function statusTooltip(command, statusLine) {
 
 function stripAnsi(raw) {
   return segmentsToHtml(parseAnsi(String(raw || ""))).replace(/<[^>]*>/g, "")
+}
+
+// POSIX single-quoting: close the quote, emit an escaped literal quote,
+// reopen it. Safe for any byte sequence a user's command string can contain.
+function shellSingleQuote(s) {
+  return "'" + String(s).replace(/'/g, "'\\''") + "'"
+}
+
+// Wraps the user's command so the process that actually runs it (a) cannot
+// outlive a fixed wall-clock deadline and (b) cannot hand back more than a
+// fixed number of bytes per stream — both enforced by the shell/coreutils
+// before Quickshell's StdioCollector ever buffers a byte, not after. Exit
+// code passes through unchanged from `timeout` on the normal path; 124 or
+// 128+9 signal the deadline/kill cases (see TIMEOUT_EXIT_CODE below).
+function wrapCommand(userCommand) {
+  var quoted = shellSingleQuote(userCommand)
+  var capOut = "head -c " + RUN_OUTPUT_BYTE_CAP
+  return "timeout -k " + RUN_KILL_AFTER_SEC + "s " + RUN_TIMEOUT_SEC + "s bash -lc " + quoted +
+    " > >(" + capOut + ") 2> >(" + capOut + " >&2)"
+}
+
+// Turns an exit code into a short human label, special-casing the two
+// shapes `timeout` produces so a hung command reads as "timed out" instead
+// of a bare, confusing exit code.
+function exitLabel(code) {
+  if (code === TIMEOUT_EXIT_CODE) return "Timed out after " + RUN_TIMEOUT_SEC + "s"
+  if (code === TIMEOUT_KILLED_EXIT_CODE) return "Timed out after " + RUN_TIMEOUT_SEC + "s (killed)"
+  return "Exit code " + code
 }

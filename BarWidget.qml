@@ -65,7 +65,7 @@ BarWidget {
     ? "No command configured"
     : !hasRunOnce
       ? "Waiting for first run…"
-      : (isError ? ("Exit code " + lastExitCode) : "OK") + " · updated " + updatedAtLabel + " · every " + intervalValue + " " + intervalUnit
+      : (isError ? Model.exitLabel(lastExitCode) : "OK") + " · updated " + updatedAtLabel + " · every " + intervalValue + " " + intervalUnit
 
   readonly property string tooltipHtml: configured
     ? Model.statusTooltip(command, statusLine)
@@ -77,7 +77,7 @@ BarWidget {
 
   function refresh() {
     if (!root.configured || runProc.running) return
-    runProc.command = ["bash", "-lc", root.command]
+    runProc.command = ["bash", "-lc", Model.wrapCommand(root.command)]
     runProc.running = true
   }
 

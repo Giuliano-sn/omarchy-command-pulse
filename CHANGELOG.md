@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.2.0
+
+- **Resource safety fix**: the configured command now runs under a 15s
+  wall-clock deadline (`timeout -k 2s 15s`) and each of stdout/stderr is
+  capped at 256 KiB at the source (`head -c`, applied before Quickshell
+  ever buffers a byte), not just when rendering. Previously a noisy
+  command (an infinite log tail) could buffer without bound, and a hung
+  one (a stuck network call) could block the widget's own refresh forever
+  since `StdioCollector` had no way to know the process would never exit.
+  Both are now bounded: a stuck command reports "Timed out after 15s" as
+  its status instead of leaving the widget stuck mid-refresh. Reported
+  during the plugin marketplace's automated security baseline review.
+
 ## 1.1.2
 
 - Settings form: all four spinboxes (refresh interval, max bar characters,

@@ -117,6 +117,11 @@ ANSI-colored output (defensively capped at 500 lines / 20000 characters for
 a runaway command), sized up to `maxPopupWidth` × `maxPopupHeight` with
 scrolling beyond that.
 
+The command itself runs under a 15-second wall-clock deadline and each of
+its stdout/stderr is capped at 256 KiB at the source — a noisy or hung
+command can't grow the shell's memory without bound or block the widget's
+own refresh; it just reports "Timed out after 15s" instead.
+
 If the command's stdout is empty but it printed something to stderr, that is
 shown instead (and the bar face turns the bar's "urgent" color when the
 command exits non-zero).
